@@ -12,11 +12,10 @@ app.use(express.json());
 app.use(cors({
     origin: [
       'https://e-commerce-app-4upc.vercel.app', // frontend client
-      'https://e-commerce-app-sooty-nine.vercel.app' // dashboard admin (exemple)
+      'https://e-commerce-app-sooty-nine.vercel.app' // dashboard admin
     ],
     credentials: true
-  }));
-  
+}));
 
 // Connexion à MongoDB via variable d'environnement
 mongoose.connect(process.env.MONGODB_URI)
@@ -34,10 +33,11 @@ const upload = multer({ storage: storage });
 
 app.use('/images', express.static('upload/images'));
 
+// Point de téléchargement d'image (ici on force le HTTPS)
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
         success: 1,
-        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}`
+        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}` // On assure que l'URL est en HTTPS
     });
 });
 
@@ -53,6 +53,7 @@ const Product = mongoose.model("Product", {
     avilable: { type: Boolean, default: true },
 });
 
+// Ajouter un produit
 app.post('/addproduct', async (req, res) => {
     const products = await Product.find({});
     const id = products.length > 0 ? products.slice(-1)[0].id + 1 : 1;
@@ -70,11 +71,13 @@ app.post('/addproduct', async (req, res) => {
     res.json({ success: true, name: req.body.name });
 });
 
+// Supprimer un produit
 app.post('/removeproduct', async (req, res) => {
     await Product.findOneAndDelete({ id: req.body.id });
     res.json({ success: true, name: req.body.name });
 });
 
+// Récupérer tous les produits
 app.get('/allproducts', async (req, res) => {
     const products = await Product.find({});
     res.send(products);
@@ -89,6 +92,7 @@ const Users = mongoose.model('Users', {
     date: { type: Date, default: Date.now },
 });
 
+// Inscription
 app.post('/signup', async (req, res) => {
     const check = await Users.findOne({ email: req.body.email });
     if (check) {
@@ -108,16 +112,17 @@ app.post('/signup', async (req, res) => {
     });
 
     await user.save();
-    const token = jwt.sign({ user: { id: user._id } }, 'secret_ecom');
+    const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET); // Utilisation de la variable d'environnement pour le secret
     res.json({ success: true, token });
 });
 
+// Connexion
 app.post('/login', async (req, res) => {
     const user = await Users.findOne({ email: req.body.email });
     if (user) {
         const passCompare = req.body.password === user.password;
         if (passCompare) {
-            const token = jwt.sign({ user: { id: user._id } }, 'secret_ecom');
+            const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET); // Utilisation de la variable d'environnement pour le secret
             res.json({ success: true, token });
         } else {
             res.json({ success: false, errors: "Mot de passe incorrect" });
@@ -127,31 +132,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.get('/newcollections', async (req, res) => {
-    const products = await Product.find({});
-    const newcollection = products.slice(-8);
-    res.send(newcollection);
-});
-
-app.get('/popularinwomen', async (req, res) => {
-    const products = await Product.find({ category: "women" });
-    const popular_in_women = products.slice(0, 4);
-    res.send(popular_in_women);
-});
-
-const fetchUser = async (req, res, next) => {
-    const token = req.header('auth-token');
-    if (!token) return res.status(401).send({ errors: "Token manquant" });
-
-    try {
-        const data = jwt.verify(token, 'secret_ecom');
-        req.user = data.user;
-        next();
-    } catch {
-        res.status(401).send({ errors: "Token invalide" });
-    }
-};
-
+// Ajouter au panier
 app.post('/addtocart', fetchUser, async (req, res) => {
     const user = await Users.findById(req.user.id);
     user.cartData[req.body.itemId] += 1;
@@ -159,6 +140,7 @@ app.post('/addtocart', fetchUser, async (req, res) => {
     res.send("Ajouté");
 });
 
+// Supprimer du panier
 app.post('/removefromcart', fetchUser, async (req, res) => {
     const user = await Users.findById(req.user.id);
     if (user.cartData[req.body.itemId] > 0) {
@@ -168,10 +150,39 @@ app.post('/removefromcart', fetchUser, async (req, res) => {
     res.send("Supprimé");
 });
 
+// Récupérer le panier
 app.post('/getcart', fetchUser, async (req, res) => {
     const user = await Users.findById(req.user.id);
     res.json(user.cartData);
 });
+
+// Récupérer les collections
+app.get('/newcollections', async (req, res) => {
+    const products = await Product.find({});
+    const newcollection = products.slice(-8);
+    res.send(newcollection);
+});
+
+// Récupérer les produits populaires pour femmes
+app.get('/popularinwomen', async (req, res) => {
+    const products = await Product.find({ category: "women" });
+    const popular_in_women = products.slice(0, 4);
+    res.send(popular_in_women);
+});
+
+// Vérification du token JWT
+const fetchUser = async (req, res, next) => {
+    const token = req.header('auth-token');
+    if (!token) return res.status(401).send({ errors: "Token manquant" });
+
+    try {
+        const data = jwt.verify(token, process.env.JWT_SECRET); // Utilisation du secret de l'environnement
+        req.user = data.user;
+        next();
+    } catch {
+        res.status(401).send({ errors: "Token invalide" });
+    }
+};
 
 // Tri par prix
 app.get('/products/women', async (req, res) => {
@@ -197,6 +208,7 @@ app.get("/", (req, res) => {
     res.send("Express App is Running");
 });
 
+// Lancer le serveur
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
