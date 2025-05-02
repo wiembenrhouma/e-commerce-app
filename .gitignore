@@ -1,0 +1,36 @@
+# Node.js (backend, frontend, admin) - Ignorer les node_modules
+**/node_modules/
+
+# Yarn PnP
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production build (frontend, backend, admin)
+**/build
+**/dist
+
+# Configuration et secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Fichiers de logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE / éditeurs
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Fichiers spécifiques à Git
+.git/
+

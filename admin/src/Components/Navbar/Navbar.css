@@ -1,0 +1,39 @@
+.navbar{
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 60px;
+    box-shadow: 0 1px 3px -2px #000;
+    margin-bottom: 1px;
+    background: white;
+}
+.nav-logo {
+    width: 50px; /* Réduire la largeur du logo */
+    max-width: 50%; /* Permet à l'image de s'adapter à la taille de son conteneur */
+    height: auto; /* Conserver les proportions */
+}
+
+.nav-profile {
+    width: 70px; /* Ajuste la taille de l'icône du profil si nécessaire */
+}
+.navbar p {
+    color: #3b3b3b;
+    font-size: 20px;
+    font-weight: 600;
+
+}
+
+
+@media(max-width:800px){
+    .navbar{
+        padding: 15px 30px;
+    }
+    .nav-logo{
+        width: 150px;
+    }
+    .nav-profile{
+        width: 60px;
+    }
+}
+

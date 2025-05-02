@@ -1,0 +1,60 @@
+.hero{
+    height: 50vh;
+    background: linear-gradient(180deg, #fde1ff, #e1ffea22 60%);
+    display: flex;
+}
+.hero-left{
+    flex-direction: column;
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    padding-left: 180px;
+    line-height: 1.1;
+
+}
+
+.hero-left p{
+    margin-top: 60px;
+    color: #171717;
+    font-size: 45px;
+    font-weight: 700;
+}
+
+.hero-latest-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 310px;
+    height: 50px;
+    border-radius: 75px;
+    margin-top: 30px;
+    background-color: #e28fc0;
+    color: white;
+    font-size: 22px;
+    font-weight: 500;
+}
+.hero-right{
+    flex:1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20;
+    width: 20;
+}
+.hero-img {
+    width: 100%;
+    max-width: 230px; /* Tu peux ajuster la taille selon le design */
+    height: auto;
+    object-fit: contain;
+    animation: float 3s ease-in-out infinite; /* Exemple d'effet */
+    padding-right: 100px;
+  }
+  .hero-latest-btn a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 20px;
+  }
