@@ -10,7 +10,7 @@ require('dotenv').config(); // Pour utiliser les variables d'environnement
 
 app.use(express.json());
 app.use(cors({
-    origin: 'https://e-commerce-app-4upc.vercel.app'
+    origin: '*'
 }));
 
 // Connexion à MongoDB via variable d'environnement
