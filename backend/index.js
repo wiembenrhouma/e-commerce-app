@@ -9,7 +9,9 @@ const path = require("path");
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://e-commerce-app-4upc.vercel.app/'  
+  }));
 
 
 const { MongoClient } = require("mongodb");
