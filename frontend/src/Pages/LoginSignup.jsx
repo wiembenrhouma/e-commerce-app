@@ -40,7 +40,7 @@ const LoginSignUp = () => {
   const signup = async ()=>{
     console.log("Signup Fonction Executed",formData);
     let responseData;
-    await fetch('https://e-commerce-app-sfct.onrender.com/signup',{
+    await fetch('https://e-commerce-app-p6bd.onrender.com/signup',{
       method:'POST',
       headers:{
         Accept:'application/form-data',
