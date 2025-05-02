@@ -12,7 +12,7 @@ const ShopCategory = (props) => {
     const fetchSortedProducts = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:4000/products/${props.category}?sort=${sortOrder}`
+          `https://e-commerce-app-sfct.onrender.com/products/${props.category}?sort=${sortOrder}`
         );
         setProducts(res.data);
         setVisibleCount(8); // 👈 reset visible count à chaque tri ou changement de catégorie
