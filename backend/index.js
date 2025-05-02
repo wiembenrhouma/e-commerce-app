@@ -10,7 +10,7 @@ const path = require("path");
 
 app.use(express.json());
 app.use(cors({
-    origin: 'https://e-commerce-app-4upc.vercel.app/'  
+    origin: 'https://e-commerce-app-4upc.vercel.app'  
   }));
 
 
