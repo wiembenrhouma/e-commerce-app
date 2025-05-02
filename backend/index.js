@@ -10,8 +10,13 @@ require('dotenv').config(); // Pour utiliser les variables d'environnement
 
 app.use(express.json());
 app.use(cors({
-    origin: '*'
-}));
+    origin: [
+      'https://e-commerce-app-4upc.vercel.app', // frontend client
+      'https://e-commerce-app-sooty-nine.vercel.app' // dashboard admin (exemple)
+    ],
+    credentials: true
+  }));
+  
 
 // Connexion à MongoDB via variable d'environnement
 mongoose.connect(process.env.MONGODB_URI)
@@ -32,7 +37,7 @@ app.use('/images', express.static('upload/images'));
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
         success: 1,
-        image_url: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}`
     });
 });
 
