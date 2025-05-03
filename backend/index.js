@@ -33,11 +33,25 @@ const upload = multer({ storage: storage });
 
 app.use('/images', express.static('upload/images'));
 
-// Point de téléchargement d'image (ici on force le HTTPS)
+// Fonction pour vérifier et extraire le token JWT de la requête
+const fetchUser = async (req, res, next) => {
+    const token = req.header('auth-token');
+    if (!token) return res.status(401).send({ errors: "Token manquant" });
+
+    try {
+        const data = jwt.verify(token, process.env.JWT_SECRET); // Utilisation du secret de l'environnement
+        req.user = data.user;
+        next();
+    } catch {
+        res.status(401).send({ errors: "Token invalide" });
+    }
+};
+
+// Point de téléchargement d'image
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
         success: 1,
-        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}` // On assure que l'URL est en HTTPS
+        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}`
     });
 });
 
@@ -112,7 +126,7 @@ app.post('/signup', async (req, res) => {
     });
 
     await user.save();
-    const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET); // Utilisation de la variable d'environnement pour le secret
+    const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET);
     res.json({ success: true, token });
 });
 
@@ -122,7 +136,7 @@ app.post('/login', async (req, res) => {
     if (user) {
         const passCompare = req.body.password === user.password;
         if (passCompare) {
-            const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET); // Utilisation de la variable d'environnement pour le secret
+            const token = jwt.sign({ user: { id: user._id } }, process.env.JWT_SECRET);
             res.json({ success: true, token });
         } else {
             res.json({ success: false, errors: "Mot de passe incorrect" });
@@ -169,20 +183,6 @@ app.get('/popularinwomen', async (req, res) => {
     const popular_in_women = products.slice(0, 4);
     res.send(popular_in_women);
 });
-
-// Vérification du token JWT
-const fetchUser = async (req, res, next) => {
-    const token = req.header('auth-token');
-    if (!token) return res.status(401).send({ errors: "Token manquant" });
-
-    try {
-        const data = jwt.verify(token, process.env.JWT_SECRET); // Utilisation du secret de l'environnement
-        req.user = data.user;
-        next();
-    } catch {
-        res.status(401).send({ errors: "Token invalide" });
-    }
-};
 
 // Tri par prix
 app.get('/products/women', async (req, res) => {
