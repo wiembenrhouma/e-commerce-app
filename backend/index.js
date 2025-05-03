@@ -156,7 +156,7 @@ app.post('/addtocart', fetchUser, async (req, res) => {
     const user = await Users.findById(req.user.id);
     user.cartData[req.body.itemId] += 1;
     await user.save();
-    res.send("Ajouté");
+    res.json({ message: "Ajouté" }); // ✅ JSON response
 });
 
 app.post('/removefromcart', fetchUser, async (req, res) => {
@@ -165,8 +165,9 @@ app.post('/removefromcart', fetchUser, async (req, res) => {
         user.cartData[req.body.itemId] -= 1;
         await user.save();
     }
-    res.send("Supprimé");
+    res.json({ message: "Supprimé" }); // ✅ JSON response
 });
+
 
 app.post('/getcart', fetchUser, async (req, res) => {
     const user = await Users.findById(req.user.id);
