@@ -7,6 +7,8 @@ const multer = require("multer");
 const cors = require('cors');
 const path = require("path");
 require('dotenv').config(); // Pour utiliser les variables d'environnement
+console.log("MONGODB_URI =", process.env.MONGODB_URI);
+
 
 app.use(express.json());
 app.use(cors({
@@ -108,6 +110,10 @@ app.post('/signup', async (req, res) => {
     });
 
     await user.save();
+
+    // ✅ Ajout du log ici :
+    console.log("Nouvel utilisateur enregistré :", user);
+
     const token = jwt.sign({ user: { id: user._id } }, 'secret_ecom');
     res.json({ success: true, token });
 });
