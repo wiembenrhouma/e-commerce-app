@@ -11,6 +11,7 @@ console.log("MONGODB_URI =", process.env.MONGODB_URI);
 
 
 app.use(express.json());
+app.options('*', cors());
 app.use(cors({
     origin: [
       'https://e-commerce-app-4upc.vercel.app', // frontend client
@@ -34,7 +35,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-app.use('/images', express.static('upload/images'));
+app.use('/images', (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*"); // ou spécifie ton domaine Vercel
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // très important pour CORB
+    next();
+  }, express.static('upload/images'));
 
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
