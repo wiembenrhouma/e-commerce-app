@@ -49,10 +49,15 @@ const upload = multer({ storage });
 
 // Route de téléchargement vers Cloudinary
 app.post("/upload", upload.single('product'), (req, res) => {
-    res.json({
-        success: 1,
-        image_url: req.file.path, // URL Cloudinary directe
-    });
+    try {
+        res.json({
+            success: 1,
+            image_url: req.file.path,
+        });
+    } catch (err) {
+        console.error("Erreur upload Cloudinary :", err);
+        res.status(500).json({ success: 0, message: "Erreur lors du téléchargement" });
+    }
 });
 
 // Product Schema
