@@ -26,25 +26,32 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("MongoDB connected"))
     .catch((err) => console.log("MongoDB connection error:", err));
 
-// Image storage config
-const storage = multer.diskStorage({
-    destination: './upload/images',
-    filename: (req, file, cb) => {
-        return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`);
-    }
+// Cloudinary configuration
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const upload = multer({ storage: storage });
 
-app.use('/images', (req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // ou spécifie ton domaine Vercel
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"); // très important pour CORB
-    next();
-  }, express.static('upload/images'));
+// Multer config with Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'ecommerce-products',
+        allowed_formats: ['jpg', 'jpeg', 'png'],
+    },
+});
 
+const upload = multer({ storage });
+
+// Route de téléchargement vers Cloudinary
 app.post("/upload", upload.single('product'), (req, res) => {
     res.json({
         success: 1,
-        image_url: `https://e-commerce-app-p6bd.onrender.com/images/${req.file.filename}`
+        image_url: req.file.path, // URL Cloudinary directe
     });
 });
 
